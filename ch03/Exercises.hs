@@ -1,4 +1,4 @@
-import Data.List (sortBy)
+import Data.List (sortBy, minimumBy)
 import Data.Fixed (mod')
 
 -- #1 & #2
@@ -48,15 +48,15 @@ myTreeHeight Empty = 0
 data Direction = LEFT 
                | RIGHT
                | STRAIGHT 
-               deriving (Show)
+               deriving (Show, Eq)
 
 -- #10
 data Point = Point {x :: Double, y :: Double} deriving (Eq, Show)
 
-angleOfTurn (Point x1 y1) (Point x2 y2) (Point x3 y3) = 
-    mod' (angleAC - angleAB) (2*pi)
-    where angleAC = atan2 (y3 - y1) (x3 - x1)
-          angleAB = atan2 (y2 - y1) (x2 - x1)
+angleAB (Point xA yA) (Point xB yB) =
+    atan2 (yB - yA) (xB - xA)
+
+angleOfTurn a b c = mod' (angleAB a c - angleAB a b) (2*pi)
 
 dirOfTurn a b c 
     | angle > 0 && angle < pi = LEFT
@@ -68,3 +68,18 @@ dirOfTurn a b c
 successiveDirs (a:b:c:xs) = (dirOfTurn a b c) : successiveDirs (b:c:xs)
 successiveDirs _ = []
 
+-- #12
+compareYFirst (Point x1 y1) (Point x2 y2) =
+    compare (y1, x1) (y2, x2)
+
+sortByAngle pts = sortBy compareAngle pts
+    where a = minimumBy compareYFirst pts
+          compareAngle p1 p2 = compare (angleAB a p1) (angleAB a p2)
+
+notRightPts spts = map fst notRightTuples
+    where dirs = successiveDirs spts 
+          ptDir = zip (tail $ init spts) dirs
+          notRightTuples = filter (\(_,d) -> d /= RIGHT) ptDir
+
+convexHull pts = (head spts) : (last spts) : notRightPts spts 
+    where spts = sortByAngle pts
