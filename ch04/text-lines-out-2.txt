@@ -1,0 +1,7 @@
+This is just some example input  
+                                
+where I hope that the first     
+word                            
+of every line will be seeked out
+and written to the output file. 
+
