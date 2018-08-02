@@ -39,14 +39,16 @@ splitWith f xs = case dropWhile (not . f) xs of
 firstWord input = unlines $ map (head . words) $ filter (not . null) (lines input)
 
 -- #4
-nullToSpace [] = " "
-nullToSpace xs = xs
+processEmptyLines ls
+    | all null ls = []
+    | otherwise = map addSpace ls
+                  where addSpace "" = " "
+                        addSpace s = s
 
 transpose' [] = []
 transpose' input =
-    let iLines = filter (not . null) (lines input) 
-        heads = map head iLines
-        tails = map tail iLines
+    let inLines = processEmptyLines $ lines input
+        heads = map head inLines
+        tails = map tail inLines
     in heads ++ '\n' : (transpose' $ unlines tails)
 
--- TODO add spaces to the code above for true transpose?
