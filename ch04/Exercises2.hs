@@ -1,11 +1,24 @@
 -- #1 
-import Data.Char (digitToInt)
+import Data.Char (digitToInt, isDigit)
 
 asInt_fold ('-' : xs) = (-1) * asInt_fold xs
 asInt_fold xs = foldl step 0 xs
     where step acc x = 10 * acc + digitToInt x
 
--- #2 is not well-defined. Will try later.
+-- #2
+type ErrorMessage = String
+errorMsg :: ErrorMessage
+errorMsg = "Error"
+
+asInt_either ('-' : xs) = result (asInt_either xs)
+    where result (Right num) = Right (-num)
+          result (Left msg) = Left msg
+asInt_either xs = foldl step (Right 0) xs
+    where step (Right acc) x 
+            | isDigit x = Right (10 * acc + digitToInt x)
+            | otherwise = Left errorMsg
+          step (Left msg) _ = (Left msg)
+
 
 -- #3
 concat' xs = foldr (++) [] xs
